@@ -1,0 +1,86 @@
+# Turma 1
+# Grupo 2
+# Integrantes:
+#	Igor Barbosa Grecia Lucio - 9778821
+#	Vitor Trevelin Xavier da Silva - 9791285
+
+# Programa em assembly Mips que implementa uma árvore binária
+
+# Estrutura de um no:
+# 0($no) = nivel
+# 4($no) = no 0
+# 8($no) = no 1
+
+	.data
+	.align 0
+str_ops: .asciiz "Operacoes\n 1: Inserir valor\n 2: Remover valor\n 3: Buscar valor\n 4: Imprimir\n-1: Sair\n"
+str_dig:	.asciiz "Digite um valor em binario ou -1 para sair: "
+str_digno:	.asciiz "Valor digitado nao esta em binario\n"
+str_insok:	.asciiz "Valor inserido\n"
+str_insre:	.asciiz "Valor repetido: nao inserido\n"
+str_remok:	.asciiz "Valor removido\n"
+str_remno:	.asciiz "Valor nao encontrado, impossivel remover\n"
+str_busok:	.asciiz "Valor encontrado"
+str_busno:	.asciiz "Valor nao encontrado"
+espaco:	.asciiz " "
+enter:	.asciiz "\n"
+tab:	.asciiz "\t"
+
+	.text
+	.globl main
+main:
+
+
+menu: # interface de escoha de operacao
+	# imprime str_ops
+	li $v0, 4
+	la $a0, str_ops
+	syscall
+	
+	# le codigo de operacao
+	li $v0, 5
+	syscall
+	add $s0, $zero, $v0
+	beq $s0, 1, read_numb
+	beq $s0, 2, read_numb
+	beq $s0, 3, read_numb
+	beq $s0, 4, print
+	beq $s0, -1, exit
+	li $v0, 4
+	la $a0, str_digno
+	syscall
+	j menu
+	
+read_numb:
+	# imprime str_dig
+	li $v0, 4
+	la $a0, str_dig
+	syscall
+	
+	# le inteiro
+	li $v0, 8
+	syscall
+	
+	move $s1, $a0
+	move $s2, $a1
+	
+	#test_print
+	li $v0, 4
+	syscall
+	
+	beq $s1, -1, menu # se s1 == -1 volta para o menu
+	beq $s0, 3, search # se s1 == 3 pula para search, se s1 == 1 ou 2 continua para tree_func
+	
+tree_func:
+
+insert:	
+	bltz $s1, izless
+	jal tree_insert
+	
+izless:
+	li $v0, 4
+	la $a0, str_digno
+	syscall
+	j read_numb
+	
+tree_insert:
